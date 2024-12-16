@@ -1,0 +1,34 @@
+name: Main Page
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.27.0'
+
+      - run: flutter config --enable-web
+      
+      - run: flutter pub get
+      
+      # - run: flutter build web --base-href "/" --web-renderer html --release
+      - run: flutter build web --base-href "/" --web-renderer canvaskit --release
+      - run: pwd
+      - run: cd ./build/web
+      - run: echo "chat.mindong.uk" > ./build/web/CNAME
+
+      - run: git init       
+      - run: git config --global user.email mindw96@naver.com
+      - run: git config --global user.name mindw96
+      - run: git status
+      
+      - run: git --work-tree build/web add --all
+      - run: git commit -m "Automatic update"
+      - run: git push origin HEAD:gh-pages --force
