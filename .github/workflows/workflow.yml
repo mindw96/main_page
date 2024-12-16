@@ -1,40 +1,27 @@
-name: Main Page
+name: Deploy Flutter Web App to GitHub Pages
+
 on:
   push:
     branches:
-      - main
+      - main  # 또는 Flutter 앱의 소스 코드가 있는 브랜치 이름
+
 jobs:
-  build:
-    name: Build Web
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          flutter-version: '3.27.0'
+    - name: Checkout
+      uses: actions/checkout@v4.1.1
 
-      - run: flutter config --enable-web
-      
-      - run: flutter pub get
-      
-      # - run: flutter build web --base-href "/" --web-renderer html --release
-      - run: flutter build web --base-href "/" --web-renderer canvaskit --release
-      - run: pwd
-      - run: cd ./build/web
-      - run: echo "mindong.uk" > ./build/web/CNAME
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2.12.0
+      with:
+        flutter-version: '3.27.0' # 사용하는 Flutter 버전으로 변경
 
-      - run: git init       
-      - run: git config --global user.email mindw96@naver.com
-      - run: git config --global user.name mindw96
-      - run: git status
-      
-      - run: git --work-tree build/web add --all
-      - run: git commit -m "Automatic update"
-      - run: git push origin HEAD:gh-pages --force
+    - name: Build Web
+      run: flutter build web --release
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3.9.3
-        with:
-            github_token: ${{ secrets.MY_SECRET_KEY_NAME }} # repository에서 사용할 시크릿 키 이름
-            publish_dir: ./build/web
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3.9.3
+      with:
+        github_token: ${{ secrets.MY_SECRET_KEY_NAME }} # repository에서 사용할 시크릿 키 이름
+        publish_dir: ./build/web
