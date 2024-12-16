@@ -22,7 +22,7 @@ jobs:
       - run: flutter build web --base-href "/" --web-renderer canvaskit --release
       - run: pwd
       - run: cd ./build/web
-      - run: echo "chat.mindong.uk" > ./build/web/CNAME
+      - run: echo "mindong.uk" > ./build/web/CNAME
 
       - run: git init       
       - run: git config --global user.email mindw96@naver.com
@@ -32,3 +32,9 @@ jobs:
       - run: git --work-tree build/web add --all
       - run: git commit -m "Automatic update"
       - run: git push origin HEAD:gh-pages --force
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3.9.3
+        with:
+            github_token: ${{ secrets.MY_SECRET_KEY_NAME }} # repository에서 사용할 시크릿 키 이름
+            publish_dir: ./build/web
